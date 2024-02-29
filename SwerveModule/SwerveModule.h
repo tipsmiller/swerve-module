@@ -10,14 +10,18 @@ private:
     std::thread *periodicThread;
     int calState = 0;
     bool calibrated = false;
+    std::atomic<double> angleSetpoint = 0.0;
+    std::atomic<double> velocitySetpoint = 0.0;
 public:
-    const double steeringOffset = -4.0;
+    const double steeringOffset = -10.0;
     VescCan steeringVesc;
     SwerveModule(int steeringId);
     ~SwerveModule();
     void begin();
     void homeSteering();
     void periodic(); // gets its own thread
+    void setAngle(double degrees);
+    void setVelocity(double velocity);
 };
 
 

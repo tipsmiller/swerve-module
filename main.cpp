@@ -6,10 +6,10 @@
 #include <sys/time.h>
 #include "Vesc/VescCan.h"
 #include "SwerveModule/SwerveModule.h"
+#include "Gamepad.h"
 
 std::atomic<bool> active;
 struct timespec ts {};
-SwerveModule swerve1(0);
 
 void printTime() {
     clock_gettime(CLOCK_REALTIME, &ts);
@@ -20,9 +20,16 @@ void printTime() {
 
 void mainLoop() {
     active = true;
-    swerve1.begin(); // putting this in this thread means it gets cleaned up by the scope closing when the thread ends
+    SwerveModule swerve1(0);  // putting this in this thread means it gets cleaned up by the scope closing when the thread ends
+    swerve1.begin();
+    Gamepad gamepad("/dev/input/event15");
     while(active) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        auto leftStick = gamepad.getAxisAngleAndMagnitude(LX, LY, 0.1);
+        if (leftStick.magnitude > 0) {
+            swerve1.setAngle(leftStick.angle);
+            swerve1.setVelocity(leftStick.magnitude);
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
     }
     printf("exiting main loop thread\n");
 }
@@ -31,6 +38,7 @@ int main() {
     printf("---PRESS ENTER TO EXIT---\n");
     std::this_thread::sleep_for(std::chrono::seconds(1));
     std::thread mainLoopThread(mainLoop);
+
 
     getchar();
     active = false;

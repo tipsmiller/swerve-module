@@ -6,8 +6,10 @@ if(NOT CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 23)
 endif()
 
-add_executable(swerve-testing main.cpp)
+add_executable(swerve-testing main.cpp
+        Gamepad.cpp
+        Gamepad.h)
 
 add_subdirectory(Vesc)
 add_subdirectory(SwerveModule)
-target_link_libraries(swerve-testing PUBLIC Vesc SwerveModule)
+target_link_libraries(swerve-testing PUBLIC Vesc SwerveModule -levdev)
