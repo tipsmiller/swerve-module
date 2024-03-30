@@ -32,5 +32,5 @@ from a linux USB port.
   -     [Match]
         Name=can0
         [CAN]
-        BitRate=500K
+        BitRate=1M
         RestartSec=100ms

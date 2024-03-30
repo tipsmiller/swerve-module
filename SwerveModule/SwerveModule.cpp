@@ -2,8 +2,10 @@
 #include "SwerveModule.h"
 
 
-SwerveModule::SwerveModule(int steeringId) {
+SwerveModule::SwerveModule(int steeringId, int drivingId, double angleOffset) {
     steeringVesc.init(steeringId);
+    drivingVesc.init(drivingId);
+    this->angleOffset = angleOffset;
 }
 
 void SwerveModule::begin() {
@@ -16,6 +18,7 @@ SwerveModule::~SwerveModule() {
         periodicThread->join();
     }
     steeringVesc.setDuty(0);
+    drivingVesc.setDuty(0);
 }
 
 void SwerveModule::periodic() {
@@ -23,14 +26,15 @@ void SwerveModule::periodic() {
         if(!calibrated) {
             homeSteering();
         } else {
-            steeringVesc.setPosition(angleSetpoint);
+            steeringVesc.setPosition(angleSetpoint - angleOffset);
+            drivingVesc.setDuty(velocitySetpoint * 0.1);
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 }
 
 void SwerveModule::homeSteering() {
-    double calDuty = 0.05;
+    double calDuty = 0.04;
     float adcVolts = steeringVesc.status6.load().adc_1;
     //printf("adc value %1.2f\n", adcVolts);
     switch (calState) {

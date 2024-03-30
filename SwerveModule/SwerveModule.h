@@ -12,10 +12,12 @@ private:
     bool calibrated = false;
     std::atomic<double> angleSetpoint = 0.0;
     std::atomic<double> velocitySetpoint = 0.0;
+    std::atomic<double> angleOffset = 0.0;
 public:
     const double steeringOffset = -10.0;
     VescCan steeringVesc;
-    SwerveModule(int steeringId);
+    VescCan drivingVesc;
+    SwerveModule(int steeringId, int drivingId, double angleOffset);
     ~SwerveModule();
     void begin();
     void homeSteering();

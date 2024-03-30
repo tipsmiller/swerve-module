@@ -89,7 +89,7 @@ std::array<double, 2> Gamepad::getAxisValues(AXES x, AXES y) {
 }
 
 double Gamepad::getAngle(std::array<double, 2> values) {
-    return (atan2(-values[1], -values[0]) + M_PI) * 360 / (M_PI * 2);
+    return (atan2(-values[1], -values[0]) + M_PI) * 180 / M_PI;
 }
 
 double Gamepad::getMagnitude(std::array<double, 2> values) {
@@ -105,6 +105,6 @@ ANGLE_MAGNITUDE Gamepad::getAxisAngleAndMagnitude(AXES x, AXES y) {
 
 ANGLE_MAGNITUDE Gamepad::getAxisAngleAndMagnitude(AXES x, AXES y, double deadband) {
     auto a_m = getAxisAngleAndMagnitude(x, y);
-    a_m.magnitude = (a_m.magnitude - deadband) / (1 - deadband);
+    a_m.magnitude = std::max((a_m.magnitude - deadband) / (1.0 - deadband), 0.0);
     return a_m;
 }
